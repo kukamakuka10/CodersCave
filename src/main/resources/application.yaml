@@ -1,0 +1,23 @@
+server:
+  port: 8189
+  servlet:
+    context-path: /demo
+jwt:
+  secret: 65161das566s1d65a196889sdaqfw
+  lifetime: 30m
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: super
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+logging:
+  level:
+    root: warn
+  file:
+    name: log/exchangeRate.log
