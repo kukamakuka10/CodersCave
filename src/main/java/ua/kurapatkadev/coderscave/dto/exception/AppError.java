@@ -1,4 +1,4 @@
-package ua.kurapatkadev.coderscave.exception.dto;
+package ua.kurapatkadev.coderscave.dto.exception;
 
 import lombok.Data;
 

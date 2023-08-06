@@ -1,4 +1,4 @@
-package ua.kurapatkadev.coderscave.controllers;
+package ua.kurapatkadev.coderscave.controllers.restcontrollers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

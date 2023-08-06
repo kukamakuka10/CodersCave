@@ -1,4 +1,4 @@
-package ua.kurapatkadev.coderscave.dto;
+package ua.kurapatkadev.coderscave.dto.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

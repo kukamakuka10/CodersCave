@@ -4,12 +4,12 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ua.kurapatkadev.coderscave.dto.RegistrationUserDTO;
+import ua.kurapatkadev.coderscave.dto.users.RegistrationUserDTO;
+import ua.kurapatkadev.coderscave.dto.users.UserDTO;
 import ua.kurapatkadev.coderscave.entities.User;
-import ua.kurapatkadev.coderscave.repository.RoleRepository;
+import ua.kurapatkadev.coderscave.mappers.UserMapper;
 import ua.kurapatkadev.coderscave.repository.UserRepository;
 
 import java.util.List;
@@ -20,24 +20,23 @@ import java.util.stream.Collectors;
 
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+
+    public UserService(UserRepository userRepository, RoleService roleService) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
     }
 
-    public Optional<User>findByUserName(String username){
+    public Optional<User> findByUserName(String username) {
         return userRepository.findByUsername(username);
     }
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user=findByUserName(username).orElseThrow(()->new UsernameNotFoundException(
-                String.format("User '%s' not found",username)
+        User user = findByUserName(username).orElseThrow(() -> new UsernameNotFoundException(
+                String.format("User '%s' not found", username)
         ));
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
@@ -45,12 +44,11 @@ public class UserService implements UserDetailsService {
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList())
         );
     }
-    public void createNewUser(RegistrationUserDTO registrationUserDTO){
-        User user=new User();
-        user.setRoles(List.of(roleRepository.findByName("ROLE_USER").get()));
-        user.setUsername(registrationUserDTO.getUsername());
-        user.setEmail(registrationUserDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(registrationUserDTO.getPassword()));
+
+    public UserDTO createNewUser(RegistrationUserDTO registrationUserDTO) {
+        User user = UserMapper.INSTANCE.mapToEntity(registrationUserDTO);
+        user.setRoles(List.of(roleService.getUserRole()));
         userRepository.save(user);
+        return UserMapper.INSTANCE.mapToDto(user);
     }
 }
